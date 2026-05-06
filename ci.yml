@@ -1,0 +1,130 @@
+name: ✨ Glam Wishlist CI/CD
+
+# Tarefa 2: dispara em push e PR na main
+# Tarefa 9: CD só roda em push na main (controlado por condição nos jobs)
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # =============================================================
+  # Tarefa 8: Job paralelo 1 — Build e instalação de dependências
+  # Tarefa 2: Pipeline de build automático
+  # Tarefa 6: Matriz de versões (Python 3.10 e 3.11)
+  # =============================================================
+  build:
+    name: 🔨 Build (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]   # Tarefa 6: testa em 2 versões
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5       # Tarefa 2: setup da linguagem
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verificar importação da aplicação
+        run: python -c "from app.main import app; print('Build OK ✅')"
+
+      # Tarefa 4: publica artefato do build (lista de dependências instaladas)
+      - name: Gerar artefato de dependências
+        run: pip freeze > installed-deps.txt
+
+      - name: Upload do artefato
+        uses: actions/upload-artifact@v4    # Tarefa 4: upload-artifact
+        with:
+          name: installed-deps-py${{ matrix.python-version }}
+          path: installed-deps.txt
+          # Útil em cenário real para auditar exatamente quais versões foram
+          # usadas no build de produção e garantir reprodutibilidade.
+
+  # =============================================================
+  # Tarefa 8: Job paralelo 2 — Testes (roda em paralelo com build)
+  # Tarefa 3: Execução automática de testes
+  # =============================================================
+  test:
+    name: 🧪 Testes (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]   # Tarefa 6: mesma matriz
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Tarefa 3: executa testes e falha o pipeline se algum quebrar
+      - name: Executar testes com pytest
+        env:
+          # Tarefa 5: uso do secret no workflow
+          API_KEY: ${{ secrets.API_KEY }}
+          DATABASE_URL: "sqlite:///:memory:"
+        run: pytest tests/ -v --tb=short
+
+      # Tarefa 3 (documentação): o que acontece se um teste falhar?
+      # Quando pytest encontra uma falha, retorna exit code != 0.
+      # O GitHub Actions interpreta isso como falha do step, marca o job
+      # como vermelho e bloqueia o merge do PR (via branch protection rule).
+
+  # =============================================================
+  # Tarefa 8: Job com dependência (needs) — só roda se build E test passarem
+  # Tarefa 9: CD — publica imagem Docker no Docker Hub
+  # Só executa em push na main (não em PRs)
+  # =============================================================
+  docker-publish:
+    name: 🐳 Docker Build & Push
+    runs-on: ubuntu-latest
+    needs: [build, test]                   # Tarefa 8: depends on ambos os jobs paralelos
+
+    # Tarefa 9: CD só roda em push na main, nunca em PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # Tarefa 9: autenticação no Docker Hub com secrets
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}   # Tarefa 5: secret
+          password: ${{ secrets.DOCKERHUB_TOKEN }}      # Tarefa 5: secret (token, nunca senha)
+
+      # Tarefa 9: build e push com tag latest E tag por SHA do commit
+      - name: Build e Push da imagem Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/glam-wishlist:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/glam-wishlist:${{ github.sha }}
+          # latest → aponta sempre para o build mais recente da main.
+          #          Conveniente para dev/staging, mas instável para produção.
+          # SHA     → identifica um build específico e imutável.
+          #          Ideal para produção: você sabe exatamente qual commit
+          #          está rodando e pode fazer rollback preciso.

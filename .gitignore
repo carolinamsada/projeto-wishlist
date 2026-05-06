@@ -1,0 +1,32 @@
+# Bytecode Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+
+# Banco de dados local
+*.db
+*.sqlite3
+
+# Variáveis de ambiente locais
+.env
+.env.*
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Cobertura de testes
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Build/dist
+dist/
+build/
+*.egg-info/
