@@ -1,17 +1,12 @@
 # ✨ Glam Wishlist API 🛍️
 
-> Sua lista de desejos mais cute do mundo — API REST para gerenciar os itens que você *precisa* (ou não) comprar.
+> Sua lista de desejos — API REST para gerenciar os itens que você *precisa* (ou não) comprar.
 
-![CI/CD](https://github.com/SEU_USUARIO/glam-wishlist/actions/workflows/ci.yml/badge.svg)
+![CI/CD](https://github.com/carolinamsada/projeto-wishlist/actions/workflows/ci.yml/badge.svg)
 
 ## 👥 Integrantes
 
-| Nome | RA |
-|------|----|
-| (nome) | (RA) |
-| (nome) | (RA) |
-| (nome) | (RA) |
-| (nome) | (RA) |
+Amanda Victória Almeida Silva
 
 ## 🛠️ Stack
 
