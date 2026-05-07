@@ -3,7 +3,7 @@ version: "3.9"
 services:
   api:
     # Usa a imagem publicada no Docker Hub (substituir pelo seu usuário)
-    image: SEU_USUARIO_DOCKERHUB/glam-wishlist:latest
+    image: cmsada/glam-wishlist:latest
     ports:
       - "8000:8000"          # Mapeia porta local 8000 → porta do container
     environment:
