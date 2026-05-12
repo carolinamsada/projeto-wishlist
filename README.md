@@ -1,12 +1,18 @@
 # ✨ Glam Wishlist API 🛍️
 
-> Sua lista de desejos — API REST para gerenciar os itens que você *precisa* (ou não) comprar.
+> Sua lista de desejos - API REST para gerenciar os itens que você *precisa* (ou não) comprar.
 
 ![CI/CD](https://github.com/carolinamsada/projeto-wishlist/actions/workflows/ci.yml/badge.svg)
 
 ## 👥 Integrantes
 
-Amanda Victória Almeida Silva
+| Nome |
+|------|
+| Amanda Victória Almeida Silva |
+| Bruno Junkes |
+| Carolina Mafra Sada |
+| Christian Schneider de Azevedo |
+| João Victor Morais Toureiro |
 
 ## 🛠️ Stack
 
@@ -53,10 +59,10 @@ pytest tests/ -v
 ## 🐳 Imagem Docker
 
 ```
-docker pull SEU_USUARIO_DOCKERHUB/glam-wishlist:latest
+docker pull cmsada/glam-wishlist:latest
 ```
 
-🔗 [Ver no Docker Hub](https://hub.docker.com/r/SEU_USUARIO_DOCKERHUB/glam-wishlist)
+🔗 [Ver no Docker Hub](https://hub.docker.com/r/cmsada/glam-wishlist)
 
 ## 📋 Pipeline CI/CD
 
