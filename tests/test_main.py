@@ -57,7 +57,7 @@ def test_create_item_full():
         "link": "https://sephora.com.br/nars-blush",
     }
     response = client.post("/items", json=payload)
-    assert response.status_code == 999
+    assert response.status_code == 201
     data = response.json()
     assert data["name"] == "NARS Blush Orgasm"
     assert data["brand"] == "NARS"
